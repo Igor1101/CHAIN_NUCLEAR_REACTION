@@ -6,8 +6,8 @@
 #include <time.h>
 #include <math.h>
 
-#define FREQ 10
-#define NEUTRONS_PER_CORE 2
+#define FREQ 30
+#define NEUTRONS_PER_CORE 5
 
 enum 
 {
@@ -122,7 +122,7 @@ void draw_all(void)
     }
   }
   SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-  for(struct Element  *i = (struct Element*)&Neutron_map[0]; i<&Neutron_map[Nmax]; i++)
+  for(struct Element  *i = (struct Element*)&Neutron_map[0]; i<&Neutron_map[drect.w * drect.h]; i++)
   {
     if( i -> indent == Neutron)
     {
@@ -220,39 +220,15 @@ int main(int argc, char ** argv)
     puts(SDL_GetError());
     return -1;
   }
-  float verx = 0.9;
-  float very = sqrt(1 - verx * verx);
-  struct Element neu = 
-  {
-    Neutron,
-    50,
-    50,
-    verx,
-    very
-  };
-  struct Element u = 
-  {
-    Uran,
-    50,
-    50,
-    0,
-    0
-  };
-
-  for(int i=0; i< 100366; i++)
+  
+  while(1)
   {
     SDL_PollEvent(&event);
-    if(event.key.keysym.sym == 'q')break;
-    SDL_SetRenderDrawColor(ren, 255, 148, 10, 255);
-    draw_element(&neu);
-    SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
-    draw_element(&u);
-    if(i%1==0)
-    {
-      draw_all();
-      SDL_RenderPresent(ren);
-      SDL_RenderClear(ren);
-    }
+    if(event.key.keysym.sym == 'q')
+      break;
+    draw_all();
+    SDL_RenderPresent(ren);
+    SDL_RenderClear(ren);
   }
   Decay_exit();
 }
