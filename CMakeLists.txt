@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (NUCLEA_DECAY)
-set(CMAKE_C_FLAGS "-Wall -g -O4 ")
+set(CMAKE_C_FLAGS "-Wall -g -Ofast ")
 find_package(SDL2 REQUIRED)
 set(ALL_LIBS
 m

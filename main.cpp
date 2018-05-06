@@ -6,7 +6,7 @@
 #include <time.h>
 #include <math.h>
 
-#define FREQ 18
+#define FREQ 11
 #define NEUTRONS_PER_CORE 2
 
 enum 
@@ -110,7 +110,7 @@ inline int step_element(Element* elem)
   return 0;
 }
 
-inline void draw_element(Element* elem)
+inline void draw_element(register Element* elem)
 {
   SDL_RenderDrawPoint(ren, (int)elem -> x, (int) elem -> y);
 }
@@ -230,7 +230,7 @@ int main(int argc, char ** argv)
     puts(SDL_GetError());
     return -1;
   }
-  
+  register int times;
   while(1)
   {
     select_to_die();
@@ -240,6 +240,7 @@ int main(int argc, char ** argv)
     draw_all();
     SDL_RenderPresent(ren);
     SDL_RenderClear(ren);
+    times++;
   }
   Decay_exit();
 }
