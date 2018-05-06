@@ -46,7 +46,8 @@ inline void select_to_die(void)
   if(rand() % 100 == 4)
   {/* Ok, select now */
     unsigned UDestroyed = rand() % Umax;
-    Uran_map[UDestroyed].indent = UranDestroyed;
+    if(Uran_map[UDestroyed].indent == Uran) 
+      Uran_map[UDestroyed].indent = UranDestroyed;
   }
 }
 inline void make_new_neutrons(Element* elem)
@@ -167,7 +168,7 @@ int main(int argc, char ** argv)
    * initialize Random generator
    */
   time_t t;
-  srand((unsigned) time(&t));
+  srand( (unsigned) time(&t) );
   /*
    * Initializing array
    */
@@ -194,33 +195,6 @@ int main(int argc, char ** argv)
   
   Neutron_map = (Element*)malloc( drect.w * drect.h * sizeof(Element) );
   memset(Neutron_map, 0, drect.w * drect.h * sizeof(Element));
-/* No neutrons at the beginning
-  indexj=0;
-  for(i=drect.x; i<drect.w; i+=FREQ*4 + 1)
-  {
-    for(j=drect.y; j<drect.h; j+=FREQ*4 + 1, indexj++)
-    {
-      float randx = ( (float)( rand() % 360) ) / 360;
-      int signy = rand() % 2;
-      int signx = rand() % 2;
-      if(signy == 0)
-        signy = -1;
-      else
-        signy = 1;
-
-      if(signx == 0)
-        signx = -1;
-      else
-        signx = 1;
-      Neutron_map[indexj].indent = Neutron;
-      Neutron_map[indexj].x = i;
-      Neutron_map[indexj].y = j;
-      Neutron_map[indexj].vecx = randx * signx;
-      Neutron_map[indexj].vecy = signy * sqrt(1 - randx * randx);
-    }
-  }
-  Nmax = indexj;
-*/
   ren = \
   SDL_CreateRenderer(win, -1, 
       SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
