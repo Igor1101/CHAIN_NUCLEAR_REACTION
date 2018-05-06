@@ -6,8 +6,8 @@
 #include <time.h>
 #include <math.h>
 
-#define FREQ 30
-#define NEUTRONS_PER_CORE 5
+#define FREQ 18
+#define NEUTRONS_PER_CORE 2
 
 enum 
 {
@@ -40,10 +40,19 @@ void Decay_exit(void)
   exit(0);
 }
 
-inline void make_new_neutrons(struct Element* elem)
+inline void select_to_die(void)
+{
+  /* select probability: should selected atom die?*/
+  if(rand() % 100 == 4)
+  {/* Ok, select now */
+    unsigned UDestroyed = rand() % Umax;
+    Uran_map[UDestroyed].indent = UranDestroyed;
+  }
+}
+inline void make_new_neutrons(Element* elem)
 {  
   register int times = NEUTRONS_PER_CORE;
-  for(struct Element  *i = &Neutron_map[0]; i < &Neutron_map[drect.w * drect.h]; i++)
+  for(Element  *i = &Neutron_map[0]; i < &Neutron_map[drect.w * drect.h]; i++)
   {
     if(i -> indent != Neutron)
     {
@@ -71,7 +80,7 @@ inline void make_new_neutrons(struct Element* elem)
   elem -> indent = 0;
 }
 
-inline int step_element(struct Element* elem)
+inline int step_element(Element* elem)
   /* 
    * return !0 if out of bounds 
    * or collision occured */
@@ -79,7 +88,7 @@ inline int step_element(struct Element* elem)
   elem -> x += elem -> vecx;
   elem -> y += elem -> vecy;
   /* verify out of bounds */
-  for(struct Element  *i = (struct Element*)&Uran_map[0]; i<&Uran_map[Umax]; i++)
+  for(Element  *i = (Element*)&Uran_map[0]; i<&Uran_map[Umax]; i++)
   {
     if( (i -> indent == Uran) && 
         ( (int) (elem -> x) == (int)i -> x) &&
@@ -101,7 +110,7 @@ inline int step_element(struct Element* elem)
   return 0;
 }
 
-inline void draw_element(struct Element* elem)
+inline void draw_element(Element* elem)
 {
   SDL_RenderDrawPoint(ren, (int)elem -> x, (int) elem -> y);
 }
@@ -110,7 +119,7 @@ void draw_all(void)
 {
   SDL_SetRenderDrawColor(ren, 255, 148, 10, 255);
   /* draw atoms firstly */
-  for(struct Element  *i = (struct Element*)&Uran_map[0]; i<&Uran_map[Umax]; i++)
+  for(Element  *i = (Element*)&Uran_map[0]; i<&Uran_map[Umax]; i++)
   {
     if(i -> indent == Uran)
     {
@@ -122,7 +131,7 @@ void draw_all(void)
     }
   }
   SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-  for(struct Element  *i = (struct Element*)&Neutron_map[0]; i<&Neutron_map[drect.w * drect.h]; i++)
+  for(Element  *i = (Element*)&Neutron_map[0]; i<&Neutron_map[drect.w * drect.h]; i++)
   {
     if( i -> indent == Neutron)
     {
@@ -165,9 +174,10 @@ int main(int argc, char ** argv)
   SDL_GetDisplayUsableBounds(0, &drect);
   printf("Display bounds are: %d, %d, %d, %d ", 
       drect.x, drect.y, drect.w, drect.h);
-  Uran_map = (struct Element*)malloc( drect.w * drect.h * sizeof(struct Element) );
-  memset(Uran_map, 0, drect.w * drect.h * sizeof(struct Element));
+  Uran_map = (Element*)malloc( drect.w * drect.h * sizeof(Element) );
+  memset(Uran_map, 0, drect.w * drect.h * sizeof(Element));
   int i, j, indexj=0;
+  /* Make Uran crystalline lattice */
   for(i=drect.x; i<drect.w; i += FREQ)
   {
     for(j=drect.y; j<drect.h; j += FREQ, indexj++)
@@ -182,9 +192,9 @@ int main(int argc, char ** argv)
   Umax = indexj;
 
   
-  Neutron_map = (struct Element*)malloc( drect.w * drect.h * sizeof(struct Element) );
-  memset(Neutron_map, 0, drect.w * drect.h * sizeof(struct Element));
-
+  Neutron_map = (Element*)malloc( drect.w * drect.h * sizeof(Element) );
+  memset(Neutron_map, 0, drect.w * drect.h * sizeof(Element));
+/* No neutrons at the beginning
   indexj=0;
   for(i=drect.x; i<drect.w; i+=FREQ*4 + 1)
   {
@@ -210,7 +220,7 @@ int main(int argc, char ** argv)
     }
   }
   Nmax = indexj;
-
+*/
   ren = \
   SDL_CreateRenderer(win, -1, 
       SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -223,6 +233,7 @@ int main(int argc, char ** argv)
   
   while(1)
   {
+    select_to_die();
     SDL_PollEvent(&event);
     if(event.key.keysym.sym == 'q')
       break;

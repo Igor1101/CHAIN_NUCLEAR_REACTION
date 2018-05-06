@@ -9,7 +9,7 @@ SDL2
 )
 
 include_directories( . )
-add_executable(DECAY main.c)
+add_executable(DECAY main.cpp)
 
 target_link_libraries(DECAY ${ALL_LIBS})
 
