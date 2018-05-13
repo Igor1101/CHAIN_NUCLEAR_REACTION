@@ -8,7 +8,6 @@
 
 #define FREQ 11
 #define NEUTRONS_PER_CORE 2
-
 enum 
 {
   Neutron=1,
@@ -19,7 +18,7 @@ enum
 SDL_Rect drect;
 SDL_Renderer *ren;
 SDL_Event event;
-SDL_Window *win;
+SDL_Window *winmain;
 int Umax;
 int Nmax;
 struct Element
@@ -32,10 +31,12 @@ struct Element
 } *Uran_map,  
   *Neutron_map;
 
+int amount_of_urans=0;
+
 void Decay_exit(void)
 {
   SDL_DestroyRenderer(ren);
-  SDL_DestroyWindow(win);
+  SDL_DestroyWindow(winmain);
   SDL_Quit();
   exit(0);
 }
@@ -118,6 +119,7 @@ inline void draw_element(register Element* elem)
 
 void draw_all(void)
 {
+  amount_of_urans = 0;
   SDL_SetRenderDrawColor(ren, 255, 148, 10, 255);
   /* draw atoms firstly */
   for(Element  *i = (Element*)&Uran_map[0]; i<&Uran_map[Umax]; i++)
@@ -125,6 +127,7 @@ void draw_all(void)
     if(i -> indent == Uran)
     {
       draw_element(i);
+      amount_of_urans++;
     }
     else if(i -> indent == UranDestroyed)
     {
@@ -148,22 +151,26 @@ void draw_all(void)
   }
   SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
 }
+
+
 int main(int argc, char ** argv)
 {
   if(SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
   {
     return -1;
   }
-  win = SDL_CreateWindow("U DECAY", 2, 2, 
+
+  winmain = SDL_CreateWindow("U DECAY", 2, 2, 
       0, 
       0,
       SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_SHOWN);
-  if(win == NULL)
+  if(winmain == NULL)
   {
-    puts("error when creating window");
+    puts("error when creating winmaindow");
     puts(SDL_GetError());
     return -1;
   }
+
   /*
    * initialize Random generator
    */
@@ -196,7 +203,7 @@ int main(int argc, char ** argv)
   Neutron_map = (Element*)malloc( drect.w * drect.h * sizeof(Element) );
   memset(Neutron_map, 0, drect.w * drect.h * sizeof(Element));
   ren = \
-  SDL_CreateRenderer(win, -1, 
+  SDL_CreateRenderer(winmain, -1, 
       SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if(ren == NULL)
   {
@@ -204,7 +211,8 @@ int main(int argc, char ** argv)
     puts(SDL_GetError());
     return -1;
   }
-  register int times;
+
+  register int times=0;
   while(1)
   {
     select_to_die();
@@ -215,6 +223,7 @@ int main(int argc, char ** argv)
     SDL_RenderPresent(ren);
     SDL_RenderClear(ren);
     times++;
+    printf("%d\n", amount_of_urans);
   }
   Decay_exit();
 }
