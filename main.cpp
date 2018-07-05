@@ -1,13 +1,16 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
+#include <iostream>
+#include <iomanip>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
+#include <cmath>
 
 #define FREQ 11
 #define NEUTRONS_PER_CORE 2
+using namespace std;
 
 enum 
 {
@@ -32,7 +35,7 @@ struct Element
 } *Uran_map,  
   *Neutron_map;
 
-void Decay_exit(void)
+void Decay_exit()
 {
   SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);
@@ -57,7 +60,7 @@ inline void make_new_neutrons(Element* elem)
   {
     if(i -> indent != Neutron)
     {
-      float randx = ( (float)( rand() % 360) ) / 360;
+      float randx = ( static_cast<float>( rand() % 361) ) / 360;
       int signy = rand() % 2;
       int signx = rand() % 2;
       if(signy == 0)
@@ -92,7 +95,7 @@ inline int step_element(Element* elem)
   for(Element  *i = (Element*)&Uran_map[0]; i<&Uran_map[Umax]; i++)
   {
     if( (i -> indent == Uran) && 
-        ( (int) (elem -> x) == (int)i -> x) &&
+        ( static_cast<int> (elem -> x) == static_cast<int>(i -> x) ) &&
         ( (int) (elem -> y) == (int)i -> y) )
     {
       /* destroy this! */
@@ -173,8 +176,11 @@ int main(int argc, char ** argv)
    * Initializing array
    */
   SDL_GetDisplayUsableBounds(0, &drect);
-  printf("Display bounds are: %d, %d, %d, %d ", 
-      drect.x, drect.y, drect.w, drect.h);
+  cout << "Display bounds are:" \
+    << drect.x << setw(5) \
+    << drect.y << setw(5) \
+    << drect.w << setw(5) \
+    << drect.h << endl;
   Uran_map = (Element*)malloc( drect.w * drect.h * sizeof(Element) );
   memset(Uran_map, 0, drect.w * drect.h * sizeof(Element));
   int i, j, indexj=0;
